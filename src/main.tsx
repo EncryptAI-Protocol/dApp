@@ -3,6 +3,8 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import { MetaMaskProvider } from "@metamask/sdk-react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import CreateDataset from "./pages/CreateDataset.tsx";
+import CreateModel from "./pages/CreateModel.tsx";
 import Datasets from "./pages/Datasets.tsx";
 import Models from "./pages/Models.tsx";
 import Root from "./pages/Root.tsx";
@@ -17,8 +19,16 @@ const router = createBrowserRouter([
         element: <Datasets />,
       },
       {
+        path: "/new-dataset",
+        element: <CreateDataset />,
+      },
+      {
         path: "/models",
         element: <Models />,
+      },
+      {
+        path: "/new-model",
+        element: <CreateModel />,
       },
     ],
   },

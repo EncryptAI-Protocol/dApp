@@ -23,7 +23,7 @@ export default function Root() {
         <span className="font-bold text-4xl">EncryptAI</span>
         <button
           type="button"
-          className="text-amber-300 border-2 border-amber-300 p-2 rounded-lg text-lg"
+          className="text-amber-300 border-2 border-amber-300 p-2 rounded-lg text-lg hover:bg-amber-300 hover:bg-opacity-30 "
           onClick={connect}
         >
           <div className="flex justify-center items-center">

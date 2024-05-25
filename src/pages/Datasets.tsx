@@ -1,3 +1,6 @@
+import { FaPlus } from "react-icons/fa6";
+import { Link } from "react-router-dom";
+
 export default function Datasets() {
   const data = [
     {
@@ -24,7 +27,17 @@ export default function Datasets() {
   ];
   return (
     <div className="flex flex-col w-full">
-      <span className="text-2xl border-b-[0.5px] border-neutral-700 py-2 font-semibold">Data Sources</span>
+      <div className="flex justify-between border-b-[0.5px] border-neutral-700 py-2">
+        <span className="text-2xl font-semibold">Data Sources</span>
+        <Link className="flex justify-center items-center" to="/new-dataset">
+          <button
+            type="button"
+            className="flex items-center text-amber-300 border-2 border-amber-300 hover:bg-amber-300 hover:bg-opacity-30  p-2 rounded-lg"
+          >
+            <FaPlus className="w-5" />
+          </button>
+        </Link>
+      </div>
       <div className="flex flex-col w-full overflow-x-auto shadow-md sm:rounded-lg my-6">
         <table className="text-sm text-left rtl:text-righ">
           <thead className="text-xs  uppercase bg-[#ffffff0d] text-gray-400">
