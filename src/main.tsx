@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
+import { MetaMaskProvider } from "@metamask/sdk-react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Datasets from "./pages/Datasets.tsx";
 import Models from "./pages/Models.tsx";
@@ -26,6 +27,15 @@ const router = createBrowserRouter([
 // biome-ignore lint: Ignore noNullAssertion
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <MetaMaskProvider
+      debug={false}
+      sdkOptions={{
+        dappMetadata: {
+          url: window.location.href,
+        },
+      }}
+    >
+      <RouterProvider router={router} />
+    </MetaMaskProvider>
   </React.StrictMode>,
 );

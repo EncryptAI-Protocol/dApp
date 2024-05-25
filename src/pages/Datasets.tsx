@@ -23,8 +23,9 @@ export default function Datasets() {
     },
   ];
   return (
-    <div className="flex flex-row w-full">
-      <div className="flex flex-col w-full overflow-x-auto shadow-md sm:rounded-lg">
+    <div className="flex flex-col w-full">
+      <span className="text-2xl border-b-[0.5px] border-neutral-700 py-2 font-semibold">Data Sources</span>
+      <div className="flex flex-col w-full overflow-x-auto shadow-md sm:rounded-lg my-6">
         <table className="text-sm text-left rtl:text-righ">
           <thead className="text-xs  uppercase bg-[#ffffff0d] text-gray-400">
             <tr>

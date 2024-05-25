@@ -32,9 +32,10 @@ export default function Models() {
     },
   ];
   return (
-    <div className="flex flex-row w-full">
+    <div className="flex flex-col w-full">
+      <span className="text-2xl border-b-[0.5px] border-neutral-700 py-2 font-semibold">Trained Models</span>
       <div className="flex flex-col w-full overflow-x-auto shadow-md sm:rounded-lg">
-        <table className="text-sm text-left rtl:text-righ">
+        <table className="text-sm text-left rtl:text-righ my-6">
           <thead className="text-xs  uppercase bg-[#ffffff0d] text-gray-400">
             <tr>
               <th className="px-6 py-3">Name</th>
@@ -47,7 +48,7 @@ export default function Models() {
           </thead>
           <tbody>
             {data.map((value) => (
-              <DatasetRow
+              <ModelRow
                 key={value.hash}
                 name={value.name}
                 labels={value.labels}
@@ -64,7 +65,7 @@ export default function Models() {
   );
 }
 
-interface DatasetProps {
+interface ModelProps {
   name: string;
   labels: Array<string>;
   hash: string;
@@ -73,7 +74,7 @@ interface DatasetProps {
   accuracy: number;
 }
 
-const DatasetRow = ({ name, labels, hash, price, datasets, accuracy }: DatasetProps) => (
+const ModelRow = ({ name, labels, hash, price, datasets, accuracy }: ModelProps) => (
   <tr className="bg-[#ffffff05] border-gray-700 text-white hover:!text-amber-300">
     <td className="px-6 py-4 font-medium whitespace-nowra">{name}</td>
     <td className="px-6 py-4">

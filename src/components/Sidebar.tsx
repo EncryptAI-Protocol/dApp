@@ -1,13 +1,13 @@
 import { useState } from "react";
 import type { IconType } from "react-icons";
-import { FaDatabase } from "react-icons/fa";
-import { FaRobot } from "react-icons/fa";
+import { MdOutlineDataObject } from "react-icons/md";
+import { MdMiscellaneousServices } from "react-icons/md";
 import { Link } from "react-router-dom";
 
 export default function Sidebar() {
   const options = [
-    { name: "Datasets", icon: FaDatabase, path: "/datasets" },
-    { name: "Models", icon: FaRobot, path: "/models" },
+    { name: "Datasets", icon: MdOutlineDataObject, path: "/datasets" },
+    { name: "Models", icon: MdMiscellaneousServices, path: "/models" },
   ];
   const [selected, setSelection] = useState(options[0].name);
 
@@ -24,7 +24,7 @@ export default function Sidebar() {
     ));
 
   return (
-    <div className="flex flex-col w-[100px] h-full shadow-xl px-2 py-2 border-r-[0.5px] border-neutral-700">
+    <div className="flex flex-col w-[100px] h-full px-2 py-2 border-r-[0.5px] border-neutral-700">
       {getOptions(options)}
     </div>
   );
