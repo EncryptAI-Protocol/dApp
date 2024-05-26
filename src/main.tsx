@@ -8,6 +8,7 @@ import CreateModel from "./pages/CreateModel.tsx";
 import Datasets from "./pages/Datasets.tsx";
 import Models from "./pages/Models.tsx";
 import Root from "./pages/Root.tsx";
+import Inference from "./pages/Inference.tsx";
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
       {
         path: "/new-model",
         element: <CreateModel />,
+      },
+      {
+        path: "/inference",
+        element: <Inference />,
       },
     ],
   },

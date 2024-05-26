@@ -52,7 +52,7 @@ export default function CreateModel() {
       <form onSubmit={onSubmit} className="flex flex-col w-[25%] my-6">
         <TextInput onChange={(value) => setName(value)} label="Name" />
         <TextInput onChange={(value) => setSymbol(value)} label="Symbol" />
-        <TextInput onChange={(value) => setHash(value)} label="Hash" />
+        <TextInput onChange={(value) => setHash(value)} label="Dataset Hash" />
         <TextInput onChange={(value) => setLabels(value)} label="Labels" />
         <TextInput onChange={(value) => setSource(value)} label="Source" />
         <TextInput onChange={(value) => setPrice(Number(value))} label="Price" />

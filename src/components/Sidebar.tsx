@@ -3,11 +3,13 @@ import type { IconType } from "react-icons";
 import { MdOutlineDataObject } from "react-icons/md";
 import { MdMiscellaneousServices } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { MdComputer } from "react-icons/md";
 
 export default function Sidebar() {
   const options = [
     { name: "Datasets", icon: MdOutlineDataObject, path: "/datasets" },
     { name: "Models", icon: MdMiscellaneousServices, path: "/models" },
+    { name: "Inference", icon: MdComputer, path: "/Inference" },
   ];
   const [selected, setSelection] = useState(options[0].name);
 
