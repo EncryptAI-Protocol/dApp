@@ -57,7 +57,7 @@ export default function Models() {
               <th className="px-6 py-3">Name</th>
               <th className="px-6 py-3">Symbol</th>
               <th className="px-6 py-3">Labels</th>
-              <th className="px-6 py-3">Hash</th>
+              <th className="px-6 py-3">Dataset Hash</th>
               <th className="px-6 py-3">Price</th>
             </tr>
           </thead>
