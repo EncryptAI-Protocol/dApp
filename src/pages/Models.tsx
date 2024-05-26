@@ -6,10 +6,10 @@ import ModelFactory from "../abi/ModelFactory.json";
 
 interface ModelSource {
   name: string;
+  symbol: string;
   hash: string;
   labels: Array<string>;
   price: number;
-  accuracy: number;
 }
 
 export default function Models() {
@@ -22,14 +22,12 @@ export default function Models() {
 
         await window.ethereum.request({ method: "eth_requestAccounts" });
 
-        const modelSource = new web3.eth.Contract(ModelFactory, "0x8185E0DbAF89f2384E7502FF5a87104974d7A947");
+        const modelSource = new web3.eth.Contract(ModelFactory, "0x8C19b8A6d6d18cdc76539d13d08a3Cc5fFd875AD");
 
         const modelSources = await modelSource.methods
           .getModelSources(1)
           .call()
           .catch((error) => console.error(error));
-
-        console.log(modelSources)
 
         if (modelSource) {
           setData(modelSources as []);
@@ -43,7 +41,7 @@ export default function Models() {
     <div className="flex flex-col w-full">
       <div className="flex justify-between border-b-[0.5px] border-neutral-700 py-2">
         <span className="text-2xl font-semibold">Model Sources</span>
-        <Link className="flex justify-center items-center" to="/new-dataset">
+        <Link className="flex justify-center items-center" to="/new-model">
           <button
             type="button"
             className="flex items-center text-amber-300 border-2 border-amber-300 hover:bg-amber-300 hover:bg-opacity-30  p-2 rounded-lg"
@@ -57,9 +55,9 @@ export default function Models() {
           <thead className="text-xs  uppercase bg-[#ffffff0d] text-gray-400">
             <tr>
               <th className="px-6 py-3">Name</th>
+              <th className="px-6 py-3">Symbol</th>
               <th className="px-6 py-3">Labels</th>
               <th className="px-6 py-3">Hash</th>
-              <th className="px-6 py-3">Accuracy</th>
               <th className="px-6 py-3">Price</th>
             </tr>
           </thead>
@@ -71,7 +69,7 @@ export default function Models() {
                 labels={value.labels}
                 hash={value.hash}
                 price={Number(value.price)}
-                accuracy={Number(value.accuracy)}
+                symbol={value.symbol}
               />
             ))}
           </tbody>
@@ -86,12 +84,13 @@ interface ModelProps {
   labels: Array<string>;
   hash: string;
   price: number;
-  accuracy: number;
+  symbol: string;
 }
 
-const ModelRow = ({ name, labels, hash, price, accuracy}: ModelProps) => (
+const ModelRow = ({ name, labels, hash, price, symbol }: ModelProps) => (
   <tr className="bg-[#ffffff05] border-gray-700 text-white hover:!text-amber-300">
     <td className="px-6 py-4 font-medium whitespace-nowra">{name}</td>
+    <td className="px-6 py-4">{symbol}</td>
     <td className="px-6 py-4">
       {" "}
       {labels.map((value) => (
@@ -102,6 +101,5 @@ const ModelRow = ({ name, labels, hash, price, accuracy}: ModelProps) => (
     </td>
     <td className="px-6 py-4">{hash}</td>
     <td className="px-6 py-4">{price} DEV</td>
-    <td className="px-6 py-4">{accuracy} %</td>
   </tr>
 );

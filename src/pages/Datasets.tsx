@@ -10,6 +10,7 @@ interface DataSource {
   hash: string;
   price: number;
   fee: number;
+  symbol: string;
 }
 
 export default function Datasets() {
@@ -20,11 +21,11 @@ export default function Datasets() {
       if (window.ethereum) {
         const web3 = new Web3(window.ethereum);
 
-        const dataSource = new web3.eth.Contract(DataFactory, "0x6fC72342b2Daa0c0D3AB20fd799AAAb6a6e50950");
+        const dataSource = new web3.eth.Contract(DataFactory, "0xf51566017d8A1ECb104B77d39BbF4Ce63DD0D3dB");
 
         const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
 
-        web3.defaultAccount = (accounts as Array<string>)[0]
+        web3.defaultAccount = (accounts as Array<string>)[0];
 
         const dataSources = await dataSource.methods
           .getDataSources(20)
@@ -57,6 +58,7 @@ export default function Datasets() {
           <thead className="text-xs  uppercase bg-[#ffffff0d] text-gray-400">
             <tr>
               <th className="px-6 py-3">Name</th>
+              <th className="px-6 py-3">Symbol</th>
               <th className="px-6 py-3">Labels</th>
               <th className="px-6 py-3">Hash</th>
               <th className="px-6 py-3">Price</th>
@@ -68,6 +70,7 @@ export default function Datasets() {
               <DatasetRow
                 key={value.hash}
                 name={value.name}
+                symbol={value.symbol}
                 labels={value.labels}
                 hash={value.hash}
                 price={Number(value.price)}
@@ -83,15 +86,17 @@ export default function Datasets() {
 
 interface DatasetProps {
   name: string;
+  symbol: string;
   labels: Array<string>;
   hash: string;
   price: number;
   fee: number;
 }
 
-const DatasetRow = ({ name, labels, hash, price, fee }: DatasetProps) => (
+const DatasetRow = ({ name, symbol, labels, hash, price, fee }: DatasetProps) => (
   <tr className="bg-[#ffffff05] border-gray-700 text-white hover:!text-amber-300">
     <td className="px-6 py-4 font-medium whitespace-nowra">{name}</td>
+    <td className="px-6 py-4">{symbol}</td>
     <td className="px-6 py-4">
       {" "}
       {labels.map((value) => (

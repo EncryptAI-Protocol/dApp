@@ -1,18 +1,18 @@
-import Web3, { type Web3BaseWalletAccount } from "web3";
-import DataFactory from "../abi/DataFactory.json";
 import { type FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Web3, { type Web3BaseWalletAccount } from "web3";
+import DataFactory from "../abi/DataFactory.json";
 
 export default function CreateDataset() {
-  const [name, setName] = useState("")
-  const [symbol, setSymbol] = useState("")
-  const [hash, setHash] = useState("")
-  const [labels, setLabels] = useState("")
-  const [source, setSource] = useState("")
-  const [price, setPrice] = useState(0)
-  const [fee, setFee] = useState(0)
+  const [name, setName] = useState("");
+  const [symbol, setSymbol] = useState("");
+  const [hash, setHash] = useState("");
+  const [labels, setLabels] = useState("");
+  const [source, setSource] = useState("");
+  const [price, setPrice] = useState(0);
+  const [fee, setFee] = useState(0);
 
-  const [provider, setProvider] = useState<Web3>()
+  const [provider, setProvider] = useState<Web3>();
 
   const navigate = useNavigate();
 
@@ -23,31 +23,27 @@ export default function CreateDataset() {
 
         const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
 
-        console.log(accounts)
+        web3.defaultAccount = (accounts as Array<string>)[0];
 
-        web3.defaultAccount = (accounts as Array<string>)[0]
-
-        setProvider(web3)
+        setProvider(web3);
       }
     }
     initProvider();
-  }, [])
+  }, []);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
     if (provider) {
-
-      const dataSource = new provider.eth.Contract(DataFactory, "0x6fC72342b2Daa0c0D3AB20fd799AAAb6a6e50950");
+      const dataSource = new provider.eth.Contract(DataFactory, "0xf51566017d8A1ECb104B77d39BbF4Ce63DD0D3dB");
 
       await dataSource.methods
         .createDataSource(name, symbol, source, hash, labels.split(","), price, fee)
         .send()
         .catch((error) => console.error(error));
 
-      navigate("/datasets")
+      navigate("/datasets");
     }
-
   }
 
   return (
@@ -81,6 +77,9 @@ interface TextInputProps {
 const TextInput = ({ label, onChange }: TextInputProps) => (
   <div className="flex flex-col">
     <label className="my-4 text-sm font-medium text-white">{label}</label>
-    <input onChange={(e) => onChange(e.target.value)} className="border w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:outline-none focus:ring-1 focus:ring-amber-300 rounded-lg" />
+    <input
+      onChange={(e) => onChange(e.target.value)}
+      className="border w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:outline-none focus:ring-1 focus:ring-amber-300 rounded-lg"
+    />
   </div>
 );
