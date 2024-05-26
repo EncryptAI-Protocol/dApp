@@ -20,16 +20,16 @@ export default function Datasets() {
       if (window.ethereum) {
         const web3 = new Web3(window.ethereum);
 
-        await window.ethereum.request({ method: "eth_requestAccounts" });
+        const dataSource = new web3.eth.Contract(DataFactory, "0x6fC72342b2Daa0c0D3AB20fd799AAAb6a6e50950");
 
-        const dataSource = new web3.eth.Contract(DataFactory, "0xca64C76b74eb9F753fca8De6920c5997Bde7069C");
+        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+
+        web3.defaultAccount = (accounts as Array<string>)[0]
 
         const dataSources = await dataSource.methods
-          .getDataSources(1)
+          .getDataSources(20)
           .call()
           .catch((error) => console.error(error));
-
-        console.log(dataSources)
 
         if (dataSource) {
           setData(dataSources as []);
