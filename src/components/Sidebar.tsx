@@ -2,8 +2,8 @@ import { useState } from "react";
 import type { IconType } from "react-icons";
 import { MdOutlineDataObject } from "react-icons/md";
 import { MdMiscellaneousServices } from "react-icons/md";
-import { Link } from "react-router-dom";
 import { MdComputer } from "react-icons/md";
+import { Link } from "react-router-dom";
 
 export default function Sidebar() {
   const options = [

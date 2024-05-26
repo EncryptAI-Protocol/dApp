@@ -6,9 +6,9 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import CreateDataset from "./pages/CreateDataset.tsx";
 import CreateModel from "./pages/CreateModel.tsx";
 import Datasets from "./pages/Datasets.tsx";
+import Inference from "./pages/Inference.tsx";
 import Models from "./pages/Models.tsx";
 import Root from "./pages/Root.tsx";
-import Inference from "./pages/Inference.tsx";
 
 const router = createBrowserRouter([
   {
