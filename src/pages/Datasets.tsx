@@ -1,30 +1,44 @@
+import { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import Web3 from "web3";
+import DataFactory from "../abi/DataFactory.json";
+
+interface DataSource {
+  name: string;
+  labels: Array<string>;
+  hash: string;
+  price: number;
+  fee: number;
+}
 
 export default function Datasets() {
-  const data = [
-    {
-      name: "Black Cat Dataset",
-      labels: ["Cat", "Black"],
-      hash: "e5c5ff1408f9793b623b1a9c83a24d27533f05ea7ab93ee67f63f4145dbdb330",
-      price: 1,
-      fee: 0.2,
-    },
-    {
-      name: "Brown Cat Dataset",
-      labels: ["Cat", "Brown"],
-      hash: "2cc01342ecbde92646b4d1aa6018b5d82f00ea8b743bc6078396c5eed407a0ae",
-      price: 2,
-      fee: 0.3,
-    },
-    {
-      name: "Dogs Dataset",
-      labels: ["Dog", "Black"],
-      hash: "9ef339f0ad2e21e9827990e73882224e2de8ed97b1d95d387f9e67ba04f50a68",
-      price: 0.5,
-      fee: 0.1,
-    },
-  ];
+  const [data, setData] = useState<DataSource[]>([]);
+
+  useEffect(() => {
+    async function getDataSources() {
+      if (window.ethereum) {
+        const web3 = new Web3(window.ethereum);
+
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+
+        const dataSource = new web3.eth.Contract(DataFactory, "0xca64C76b74eb9F753fca8De6920c5997Bde7069C");
+
+        const dataSources = await dataSource.methods
+          .getDataSources(1)
+          .call()
+          .catch((error) => console.error(error));
+
+        console.log(dataSources)
+
+        if (dataSource) {
+          setData(dataSources as []);
+        }
+      }
+    }
+    getDataSources();
+  }, []);
+
   return (
     <div className="flex flex-col w-full">
       <div className="flex justify-between border-b-[0.5px] border-neutral-700 py-2">
@@ -56,8 +70,8 @@ export default function Datasets() {
                 name={value.name}
                 labels={value.labels}
                 hash={value.hash}
-                price={value.price}
-                fee={value.fee}
+                price={Number(value.price)}
+                fee={Number(value.fee)}
               />
             ))}
           </tbody>
