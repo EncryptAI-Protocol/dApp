@@ -6,8 +6,6 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider } from 'wagmi';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
-
-import Wallet from "./components/Wallet/Wallet.tsx";
 import { config } from './wagmi';
 
 import CreateDataset from "./pages/CreateDataset.tsx";
@@ -57,7 +55,6 @@ root.render(
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
-        <Wallet/>
         <RouterProvider router={router} />
         </RainbowKitProvider>
       </QueryClientProvider>

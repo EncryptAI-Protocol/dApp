@@ -32,7 +32,7 @@ export default function Datasets() {
           .call()
           .catch((error) => console.error(error));
 
-        if (dataSource) {
+        if (dataSource && dataSources) {
           setData(dataSources as []);
         }
       }

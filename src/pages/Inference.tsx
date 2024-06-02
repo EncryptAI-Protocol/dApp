@@ -1,46 +1,22 @@
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoShieldCheckmarkSharp } from "react-icons/io5";
+import Web3 from "web3";
+import ModelFactory from "../abi/ModelFactory.json";
 
-export const data = [
-  {
-    name: "Cat Detection",
-    labels: ["Cat", "Detection"],
-    hash: "80c1daf4a9a058ae9b8b716c4cdf6dc2eda9ff571f9c25cb7f528a3bb39f48ca",
-    fhe: "YES",
-    price: 1,
-    accuracy: 60,
-    datasets: [
-      "e5c5ff1408f9793b623b1a9c83a24d27533f05ea7ab93ee67f63f4145dbdb330",
-      "2cc01342ecbde92646b4d1aa6018b5d82f00ea8b743bc6078396c5eed407a0ae",
-    ],
-  },
-  {
-    name: "Cat Detection v2",
-    labels: ["Cat", "Detection"],
-    hash: "b9529d3ad671dd120d4f0e482ca778040808b638c52be73dc39a0b965d190fd1",
-    fhe: "YES",
-    price: 2,
-    accuracy: 80,
-    datasets: [
-      "e5c5ff1408f9793b623b1a9c83a24d27533f05ea7ab93ee67f63f4145dbdb330",
-      "2cc01342ecbde92646b4d1aa6018b5d82f00ea8b743bc6078396c5eed407a0ae",
-    ],
-  },
-  {
-    name: "Dog Detection",
-    labels: ["Dog", "Detection"],
-    hash: "9ef339f0ad2e21e9827990e73882224e2de8ed97b1d95d387f9e67ba04f50a68",
-    fhe: "NO",
-    price: 0.5,
-    accuracy: 90,
-    datasets: ["95ca0e969408d1a8987780da9657764d84e36b093bb2f9ead00668c3fd7ebef9"],
-  },
-];
+interface ModelSource {
+  name: string;
+  symbol: string;
+  hash: string;
+  labels: Array<string>;
+  price: number;
+}
 
 const Inference = () => {
+  const [data, setData] = useState<ModelSource[]>([]);
   const [selectedModel, setSelectedModel] = useState("");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleModelChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedModel(event.target.value);
@@ -67,6 +43,28 @@ const Inference = () => {
   };
 
   const selectedModelData = data.find((model) => model.name === selectedModel);
+
+  useEffect(() => {
+    async function getModelSources() {
+      if (window.ethereum) {
+        const web3 = new Web3(window.ethereum);
+
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+
+        const modelSource = new web3.eth.Contract(ModelFactory, "0x8C19b8A6d6d18cdc76539d13d08a3Cc5fFd875AD");
+
+        const modelSources = await modelSource.methods
+          .getModelSources(20)
+          .call()
+          .catch((error) => console.error(error));
+
+        if (modelSource && modelSources) {
+          setData(modelSources as []);
+        }
+      }
+    }
+    getModelSources();
+  }, []);
 
   return (
     <div className="flex flex-col w-full">
@@ -108,7 +106,7 @@ const Inference = () => {
         <button
           type="button"
           className="mt-4 text-amber-300 border-2 border-amber-300 rounded-lg text-lg hover:bg-amber-300 hover:bg-opacity-30"
-          onClick={() => alert("Inference started")}
+          onClick={() => setIsModalOpen(true)}
         >
           <div className="flex justify-center items-center">
             <>
@@ -116,6 +114,44 @@ const Inference = () => {
             </>
           </div>
         </button>
+        {isModalOpen && (
+          <div className="fixed z-10 inset-0 overflow-y-auto">
+            <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+              <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+              </div>
+
+              <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div className="bg-gray-700 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                  <div className="sm:flex sm:items-start">
+                    <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-black sm:mx-0 sm:h-10 sm:w-10">
+                      <img src="encryptai-white.svg" className="h-6 w-6" alt="Loading" />
+                    </div>
+                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                      <h3 className="text-lg leading-6 font-medium text-white pt-2 pb-10">Inference Launched</h3>
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-900 rounded-full h-2.5 dark:bg-gray-900">
+                      <div className="bg-amber-300 h-2.5 rounded-full pt-2 animate-width-full"></div>
+                  </div>
+                </div>
+                <div className="bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button
+                  type="button"
+                  className="mt-4 text-amber-300 border-2 border-amber-300 rounded-lg text-lg hover:bg-amber-300 hover:bg-opacity-30"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  <div className="flex justify-center items-center">
+                    <>
+                      <span className="mx-2">Close</span>
+                    </>
+                  </div>
+                </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

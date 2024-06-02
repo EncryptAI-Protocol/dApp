@@ -25,11 +25,11 @@ export default function Models() {
         const modelSource = new web3.eth.Contract(ModelFactory, "0x8C19b8A6d6d18cdc76539d13d08a3Cc5fFd875AD");
 
         const modelSources = await modelSource.methods
-          .getModelSources(1)
+          .getModelSources(20)
           .call()
           .catch((error) => console.error(error));
 
-        if (modelSource) {
+        if (modelSource && modelSources) {
           setData(modelSources as []);
         }
       }
