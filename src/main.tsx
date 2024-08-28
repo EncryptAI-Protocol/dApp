@@ -8,7 +8,8 @@ import { WagmiProvider } from 'wagmi';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { config } from './wagmi';
 
-import CreateDataset from "./pages/CreateDataset.tsx";
+//import CreateDataset from "./pages/CreateDataset.tsx";
+import CreateDataNFT from "./pages/CreateDataNFT.tsx";
 import CreateModel from "./pages/CreateModel.tsx";
 import Datasets from "./pages/Datasets.tsx";
 import Inference from "./pages/Inference.tsx";
@@ -30,7 +31,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/new-dataset",
-        element: <CreateDataset />,
+        element: <CreateDataNFT />,
       },
       {
         path: "/models",
