@@ -2,31 +2,64 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { IoShieldCheckmarkSharp } from "react-icons/io5";
 import Web3 from "web3";
-import ModelFactory from "../abi/ModelFactory.json";
+import axios from "axios";
+import { Config } from "../config.js";
+import TokenFactory from "../abi/TokenFactory.json";
+
+interface Attributes {
+    name: string;
+    modelHash: string;
+    modelType: string;
+    tokenPrice: number;
+    fee: number;
+    symbol: string;
+    desc: string;
+    labels: Array<string>;
+    ipfsURI: string;
+    icon: string;
+  }
 
 interface ModelSource {
-  name: string;
-  symbol: string;
-  hash: string;
-  labels: Array<string>;
-  price: number;
+  tokenID: string;
+  attributes: Attributes;
+  owner: string;
 }
 
 const Inference = () => {
   const [data, setData] = useState<ModelSource[]>([]);
   const [selectedModel, setSelectedModel] = useState("");
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleModelChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedModel(event.target.value);
   };
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    // biome-ignore lint/complexity/useOptionalChain: <explanation>
+    if (file && file.type.startsWith("text/")) {
+      setSelectedFile(file);
+    } else {
+      alert("Please upload a text file");
+    }
+  };
+
+  const handleFileDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const file = event.dataTransfer.items[0].getAsFile();
+    if (file?.type.startsWith("text/")) {
+      setSelectedFile(file);
+    } else {
+      alert("Please drop an text file");
+    }
+  };
+
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
     // biome-ignore lint/complexity/useOptionalChain: <explanation>
     if (file && file.type.startsWith("image/")) {
-      setSelectedImage(file);
+      setSelectedFile(file);
     } else {
       alert("Please upload an image file");
     }
@@ -36,13 +69,27 @@ const Inference = () => {
     event.preventDefault();
     const file = event.dataTransfer.items[0].getAsFile();
     if (file?.type.startsWith("image/")) {
-      setSelectedImage(file);
+      setSelectedFile(file);
     } else {
       alert("Please drop an image file");
     }
   };
 
-  const selectedModelData = data.find((model) => model.name === selectedModel);
+  const launchInference = async (id: string) => {
+    try {
+      const response = await axios.post(Config.APIBaseURL + '/inference', { modelID: id }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log('Inference Results:', response.data);
+      return;
+    } catch (error) {
+      console.error('Error launching inference:', error);
+    }
+  };
+
+  const selectedModelData = data.find((model) => model.attributes.name === selectedModel);
 
   useEffect(() => {
     async function getModelSources() {
@@ -51,10 +98,10 @@ const Inference = () => {
 
         await window.ethereum.request({ method: "eth_requestAccounts" });
 
-        const modelSource = new web3.eth.Contract(ModelFactory, "0x8C19b8A6d6d18cdc76539d13d08a3Cc5fFd875AD");
+        const modelSource = new web3.eth.Contract(TokenFactory, "0x4657d5c40ddbc649bb9592b969fda9c642c34a86");
 
         const modelSources = await modelSource.methods
-          .getModelSources(20)
+          .getAllMintedModelNFTs()
           .call()
           .catch((error) => console.error(error));
 
@@ -77,8 +124,8 @@ const Inference = () => {
           <span className="text-white">Select Model:</span>
           <select className="form-select mt-1 block w-full" value={selectedModel} onChange={handleModelChange}>
             {data.map((model) => (
-              <option key={model.hash} value={model.name}>
-                {model.name}
+              <option key={model.attributes.modelHash} value={model.tokenID}>
+                {model.attributes.name}
               </option>
             ))}
           </select>
@@ -91,23 +138,42 @@ const Inference = () => {
           </p>
         )}
 
-        <label className="block mt-4">
-          <span className="text-white">Upload Image:</span>
-          <input className="mt-1" type="file" accept="image/*" onChange={handleImageChange} />
-        </label>
+        { selectedModelData && selectedModelData.attributes.modelType === "Logistic Regression" ? (
+         <>
+          <label className="block mt-4">
+            <span className="text-white">Upload Image:</span>
+            <input className="mt-1" type="file" accept="image/*" onChange={handleImageChange} />
+          </label>
 
-        <div
-          onDrop={handleImageDrop}
-          onDragOver={(event) => event.preventDefault()}
-          className="mt-4 border-2 border-dashed border-gray-200 h-32 flex items-center justify-center text-gray-500"
-        >
-          Drop image here
-        </div>
-        <button
-          type="button"
-          className="mt-4 text-amber-300 border-2 border-amber-300 rounded-lg text-lg hover:bg-amber-300 hover:bg-opacity-30"
-          onClick={() => setIsModalOpen(true)}
-        >
+          <div
+            onDrop={handleImageDrop}
+            onDragOver={(event) => event.preventDefault()}
+            className="mt-4 border-2 border-dashed border-gray-200 h-32 flex items-center justify-center text-gray-500"
+          >
+            Drop image here
+          </div>
+        </> 
+        ) : (
+        <>
+          <label className="block mt-4">
+            <span className="text-white">Upload Input:</span>
+            <input className="mt-1" type="file" accept="text/*" onChange={handleFileChange} />
+          </label>
+
+          <div
+            onDrop={handleFileDrop}
+            onDragOver={(event) => event.preventDefault()}
+            className="mt-4 border-2 border-dashed border-gray-200 h-32 flex items-center justify-center text-gray-500"
+          >
+            Drop input file here
+          </div>
+        </> 
+        )}
+          <button
+            type="button"
+            className="mt-4 text-amber-300 border-2 border-amber-300 rounded-lg text-lg hover:bg-amber-300 hover:bg-opacity-30"
+            onClick={() => { launchInference(selectedModel); setIsModalOpen(true); }}
+          >
           <div className="flex justify-center items-center">
             <>
               <span className="mx-2">Launch Inference</span>

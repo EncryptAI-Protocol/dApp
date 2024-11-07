@@ -8,9 +8,8 @@ import { WagmiProvider } from 'wagmi';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { config } from './wagmi';
 
-//import CreateDataset from "./pages/CreateDataset.tsx";
 import CreateDataNFT from "./pages/CreateDataNFT.tsx";
-import CreateModel from "./pages/CreateModel.tsx";
+import CreateModelNFT from "./pages/CreateModelNFT.tsx";
 import Datasets from "./pages/Datasets.tsx";
 import Inference from "./pages/Inference.tsx";
 import Models from "./pages/Models.tsx";
@@ -39,7 +38,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/new-model",
-        element: <CreateModel />,
+        element: <CreateModelNFT />,
       },
       {
         path: "/inference",

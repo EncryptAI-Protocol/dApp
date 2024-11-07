@@ -29,14 +29,14 @@ export default function Datasets() {
       if (window.ethereum) {
         const web3 = new Web3(window.ethereum);
 
-        const dataSource = new web3.eth.Contract(tokenFactory, "0x037DE0BDaDb48348a302094C49d772A44D2fCeA8");
+        const dataSource = new web3.eth.Contract(tokenFactory, "0x4657d5c40ddbc649bb9592b969fda9c642c34a86");
 
         const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
 
         web3.defaultAccount = (accounts as Array<string>)[0];
 
         const dataSources = await dataSource.methods
-          .getAllMintedNFTs()
+          .getAllMintedDataNFTs()
           .call()
           .catch((error) => console.error(error));
 
@@ -121,7 +121,7 @@ const DatasetRow = ({ uri, icon, name, symbol, desc, labels, datasetHash, owner,
         <FaDownload className="w-5 h-5" />
       </a>
     </td>
-    <td>
+    <td className="px-6 py-4" style={{ width: '100px', height: '100px' }}>
         <img src={icon} alt={`${name} icon`} />
     </td>
     <td className="px-6 py-4 font-medium whitespace-nowra">{name}</td>
@@ -135,8 +135,8 @@ const DatasetRow = ({ uri, icon, name, symbol, desc, labels, datasetHash, owner,
       </span>
     ))}
   </td>
-    <td className="px-6 py-4">{datasetHash}</td>
-    <td className="px-6 py-4">{owner}</td>
+    <td className="px-6 py-4">{datasetHash.slice(0,9)}...{datasetHash.slice(-9,)}</td>
+    <td className="px-6 py-4">{owner.slice(0,9)}...{owner.slice(-9,)}</td>
     <td className="px-6 py-4">{tokenPrice} EAI</td>
     <td className="px-6 py-4">{fee} EAI</td>
   </tr>
