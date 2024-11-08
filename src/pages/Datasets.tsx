@@ -113,7 +113,6 @@ interface DatasetProps {
 }
 
 const DatasetRow = ({ uri, icon, name, symbol, desc, labels, datasetHash, owner, tokenPrice, fee }: DatasetProps) => {
-  console.log('URI:', uri);
   return (
   <tr className="bg-[#ffffff05] border-gray-700 text-white hover:!text-amber-300">
     <td className="px-6 py-4">
