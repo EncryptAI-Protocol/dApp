@@ -1,12 +1,12 @@
-import '@rainbow-me/rainbowkit/styles.css';
-import './index.css';
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import "@rainbow-me/rainbowkit/styles.css";
+import "./index.css";
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React from "react";
+import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WagmiProvider } from 'wagmi';
-import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
-import { config } from './wagmi';
+import { WagmiProvider } from "wagmi";
+import { config } from "./wagmi";
 
 import CreateDataNFT from "./pages/CreateDataNFT.tsx";
 import CreateModelNFT from "./pages/CreateModelNFT.tsx";
@@ -15,9 +15,7 @@ import Inference from "./pages/Inference.tsx";
 import Models from "./pages/Models.tsx";
 import Root from "./pages/Root.tsx";
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 
 const router = createBrowserRouter([
   {
@@ -55,9 +53,9 @@ root.render(
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
-        <RouterProvider router={router} />
+          <RouterProvider router={router} />
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

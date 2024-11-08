@@ -4,13 +4,13 @@ module.exports = {
   theme: {
     extend: {
       keyframes: {
-        'width-full': {
-          '0%': { width: '0%' },
-          '100%': { width: '100%' },
+        "width-full": {
+          "0%": { width: "0%" },
+          "100%": { width: "100%" },
         },
       },
       animation: {
-        'width-full': 'width-full 2s ease-in-out',
+        "width-full": "width-full 2s ease-in-out",
       },
     },
   },

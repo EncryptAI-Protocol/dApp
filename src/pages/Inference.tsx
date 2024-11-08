@@ -1,23 +1,23 @@
+import axios from "axios";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { IoShieldCheckmarkSharp } from "react-icons/io5";
 import Web3 from "web3";
-import axios from "axios";
-import { Config } from "../config.js";
 import TokenFactory from "../abi/TokenFactory.json";
+import { Config } from "../config.js";
 
 interface Attributes {
-    name: string;
-    modelHash: string;
-    modelType: string;
-    tokenPrice: number;
-    fee: number;
-    symbol: string;
-    desc: string;
-    labels: Array<string>;
-    ipfsURI: string;
-    icon: string;
-  }
+  name: string;
+  modelHash: string;
+  modelType: string;
+  tokenPrice: number;
+  fee: number;
+  symbol: string;
+  desc: string;
+  labels: Array<string>;
+  ipfsURI: string;
+  icon: string;
+}
 
 interface ModelSource {
   tokenID: string;
@@ -77,15 +77,19 @@ const Inference = () => {
 
   const launchInference = async (id: string) => {
     try {
-      const response = await axios.post(Config.APIBaseURL + '/inference', { modelID: id }, {
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await axios.post(
+        `${Config.APIBaseURL}/inference`,
+        { modelID: id },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      });
-      console.log('Inference Results:', response.data);
+      );
+      console.log("Inference Results:", response.data);
       return;
     } catch (error) {
-      console.error('Error launching inference:', error);
+      console.error("Error launching inference:", error);
     }
   };
 
@@ -138,42 +142,45 @@ const Inference = () => {
           </p>
         )}
 
-        { selectedModelData && selectedModelData.attributes.modelType === "Logistic Regression" ? (
-         <>
-          <label className="block mt-4">
-            <span className="text-white">Upload Image:</span>
-            <input className="mt-1" type="file" accept="image/*" onChange={handleImageChange} />
-          </label>
+        {selectedModelData && selectedModelData.attributes.modelType === "Logistic Regression" ? (
+          <>
+            <label className="block mt-4">
+              <span className="text-white">Upload Image:</span>
+              <input className="mt-1" type="file" accept="image/*" onChange={handleImageChange} />
+            </label>
 
-          <div
-            onDrop={handleImageDrop}
-            onDragOver={(event) => event.preventDefault()}
-            className="mt-4 border-2 border-dashed border-gray-200 h-32 flex items-center justify-center text-gray-500"
-          >
-            Drop image here
-          </div>
-        </> 
+            <div
+              onDrop={handleImageDrop}
+              onDragOver={(event) => event.preventDefault()}
+              className="mt-4 border-2 border-dashed border-gray-200 h-32 flex items-center justify-center text-gray-500"
+            >
+              Drop image here
+            </div>
+          </>
         ) : (
-        <>
-          <label className="block mt-4">
-            <span className="text-white">Upload Input:</span>
-            <input className="mt-1" type="file" accept="text/*" onChange={handleFileChange} />
-          </label>
+          <>
+            <label className="block mt-4">
+              <span className="text-white">Upload Input:</span>
+              <input className="mt-1" type="file" accept="text/*" onChange={handleFileChange} />
+            </label>
 
-          <div
-            onDrop={handleFileDrop}
-            onDragOver={(event) => event.preventDefault()}
-            className="mt-4 border-2 border-dashed border-gray-200 h-32 flex items-center justify-center text-gray-500"
-          >
-            Drop input file here
-          </div>
-        </> 
+            <div
+              onDrop={handleFileDrop}
+              onDragOver={(event) => event.preventDefault()}
+              className="mt-4 border-2 border-dashed border-gray-200 h-32 flex items-center justify-center text-gray-500"
+            >
+              Drop input file here
+            </div>
+          </>
         )}
-          <button
-            type="button"
-            className="mt-4 text-amber-300 border-2 border-amber-300 rounded-lg text-lg hover:bg-amber-300 hover:bg-opacity-30"
-            onClick={() => { launchInference(selectedModel); setIsModalOpen(true); }}
-          >
+        <button
+          type="button"
+          className="mt-4 text-amber-300 border-2 border-amber-300 rounded-lg text-lg hover:bg-amber-300 hover:bg-opacity-30"
+          onClick={() => {
+            launchInference(selectedModel);
+            setIsModalOpen(true);
+          }}
+        >
           <div className="flex justify-center items-center">
             <>
               <span className="mx-2">Launch Inference</span>
@@ -184,7 +191,7 @@ const Inference = () => {
           <div className="fixed z-10 inset-0 overflow-y-auto">
             <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
               <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-                <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+                <div className="absolute inset-0 bg-gray-500 opacity-75" />
               </div>
 
               <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
@@ -198,21 +205,21 @@ const Inference = () => {
                     </div>
                   </div>
                   <div className="w-full bg-gray-900 rounded-full h-2.5 dark:bg-gray-900">
-                      <div className="bg-amber-300 h-2.5 rounded-full pt-2 animate-width-full"></div>
+                    <div className="bg-amber-300 h-2.5 rounded-full pt-2 animate-width-full" />
                   </div>
                 </div>
                 <div className="bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button
-                  type="button"
-                  className="mt-4 text-amber-300 border-2 border-amber-300 rounded-lg text-lg hover:bg-amber-300 hover:bg-opacity-30"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  <div className="flex justify-center items-center">
-                    <>
-                      <span className="mx-2">Close</span>
-                    </>
-                  </div>
-                </button>
+                  <button
+                    type="button"
+                    className="mt-4 text-amber-300 border-2 border-amber-300 rounded-lg text-lg hover:bg-amber-300 hover:bg-opacity-30"
+                    onClick={() => setIsModalOpen(false)}
+                  >
+                    <div className="flex justify-center items-center">
+                      <>
+                        <span className="mx-2">Close</span>
+                      </>
+                    </div>
+                  </button>
                 </div>
               </div>
             </div>

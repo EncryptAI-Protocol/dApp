@@ -1,3 +1,3 @@
-export const Config = { 
-    "APIBaseURL": import.meta.env.REACT_APP_APIBASEURL 
+export const Config = {
+  APIBaseURL: import.meta.env.REACT_APP_APIBASEURL,
 };

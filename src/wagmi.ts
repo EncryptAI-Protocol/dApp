@@ -1,9 +1,9 @@
-import { createConfig, http } from 'wagmi'
-import { mainnet, sepolia, moonbaseAlpha } from 'wagmi/chains'
+import { http, createConfig } from "wagmi";
+import { mainnet, moonbaseAlpha, sepolia } from "wagmi/chains";
 
-declare module 'wagmi' {
+declare module "wagmi" {
   interface Register {
-    config: typeof config
+    config: typeof config;
   }
 }
 
@@ -14,4 +14,4 @@ export const config = createConfig({
     [sepolia.id]: http(),
     [moonbaseAlpha.id]: http(),
   },
-})
+});
