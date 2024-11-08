@@ -1,14 +1,21 @@
+import "@rainbow-me/rainbowkit/styles.css";
+import "./index.css";
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
-import { MetaMaskProvider } from "@metamask/sdk-react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import CreateDataset from "./pages/CreateDataset.tsx";
-import CreateModel from "./pages/CreateModel.tsx";
+import { WagmiProvider } from "wagmi";
+import { config } from "./wagmi";
+
+import CreateDataNFT from "./pages/CreateDataNFT.tsx";
+import CreateModelNFT from "./pages/CreateModelNFT.tsx";
 import Datasets from "./pages/Datasets.tsx";
 import Inference from "./pages/Inference.tsx";
 import Models from "./pages/Models.tsx";
 import Root from "./pages/Root.tsx";
+
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 
 const router = createBrowserRouter([
   {
@@ -21,7 +28,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/new-dataset",
-        element: <CreateDataset />,
+        element: <CreateDataNFT />,
       },
       {
         path: "/models",
@@ -29,7 +36,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/new-model",
-        element: <CreateModel />,
+        element: <CreateModelNFT />,
       },
       {
         path: "/inference",
@@ -39,18 +46,16 @@ const router = createBrowserRouter([
   },
 ]);
 
-// biome-ignore lint: Ignore noNullAssertion
-ReactDOM.createRoot(document.getElementById("root")!).render(
+const queryClient = new QueryClient();
+
+root.render(
   <React.StrictMode>
-    <MetaMaskProvider
-      debug={false}
-      sdkOptions={{
-        dappMetadata: {
-          url: window.location.href,
-        },
-      }}
-    >
-      <RouterProvider router={router} />
-    </MetaMaskProvider>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider>
+          <RouterProvider router={router} />
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   </React.StrictMode>,
 );

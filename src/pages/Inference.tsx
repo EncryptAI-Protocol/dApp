@@ -1,56 +1,65 @@
+import axios from "axios";
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoShieldCheckmarkSharp } from "react-icons/io5";
+import Web3 from "web3";
+import TokenFactory from "../abi/TokenFactory.json";
+import { Config } from "../config.js";
 
-export const data = [
-  {
-    name: "Cat Detection",
-    labels: ["Cat", "Detection"],
-    hash: "80c1daf4a9a058ae9b8b716c4cdf6dc2eda9ff571f9c25cb7f528a3bb39f48ca",
-    fhe: "YES",
-    price: 1,
-    accuracy: 60,
-    datasets: [
-      "e5c5ff1408f9793b623b1a9c83a24d27533f05ea7ab93ee67f63f4145dbdb330",
-      "2cc01342ecbde92646b4d1aa6018b5d82f00ea8b743bc6078396c5eed407a0ae",
-    ],
-  },
-  {
-    name: "Cat Detection v2",
-    labels: ["Cat", "Detection"],
-    hash: "b9529d3ad671dd120d4f0e482ca778040808b638c52be73dc39a0b965d190fd1",
-    fhe: "YES",
-    price: 2,
-    accuracy: 80,
-    datasets: [
-      "e5c5ff1408f9793b623b1a9c83a24d27533f05ea7ab93ee67f63f4145dbdb330",
-      "2cc01342ecbde92646b4d1aa6018b5d82f00ea8b743bc6078396c5eed407a0ae",
-    ],
-  },
-  {
-    name: "Dog Detection",
-    labels: ["Dog", "Detection"],
-    hash: "9ef339f0ad2e21e9827990e73882224e2de8ed97b1d95d387f9e67ba04f50a68",
-    fhe: "NO",
-    price: 0.5,
-    accuracy: 90,
-    datasets: ["95ca0e969408d1a8987780da9657764d84e36b093bb2f9ead00668c3fd7ebef9"],
-  },
-];
+interface Attributes {
+  name: string;
+  modelHash: string;
+  modelType: string;
+  tokenPrice: number;
+  fee: number;
+  symbol: string;
+  desc: string;
+  labels: Array<string>;
+  ipfsURI: string;
+  icon: string;
+}
+
+interface ModelSource {
+  tokenID: string;
+  attributes: Attributes;
+  owner: string;
+}
 
 const Inference = () => {
+  const [data, setData] = useState<ModelSource[]>([]);
   const [selectedModel, setSelectedModel] = useState("");
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleModelChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedModel(event.target.value);
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    // biome-ignore lint/complexity/useOptionalChain: <explanation>
+    if (file && file.type.startsWith("text/")) {
+      setSelectedFile(file);
+    } else {
+      alert("Please upload a text file");
+    }
+  };
+
+  const handleFileDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const file = event.dataTransfer.items[0].getAsFile();
+    if (file?.type.startsWith("text/")) {
+      setSelectedFile(file);
+    } else {
+      alert("Please drop an text file");
+    }
   };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
     // biome-ignore lint/complexity/useOptionalChain: <explanation>
     if (file && file.type.startsWith("image/")) {
-      setSelectedImage(file);
+      setSelectedFile(file);
     } else {
       alert("Please upload an image file");
     }
@@ -60,13 +69,53 @@ const Inference = () => {
     event.preventDefault();
     const file = event.dataTransfer.items[0].getAsFile();
     if (file?.type.startsWith("image/")) {
-      setSelectedImage(file);
+      setSelectedFile(file);
     } else {
       alert("Please drop an image file");
     }
   };
 
-  const selectedModelData = data.find((model) => model.name === selectedModel);
+  const launchInference = async (id: string) => {
+    try {
+      const response = await axios.post(
+        `${Config.APIBaseURL}/inference`,
+        { modelID: id },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      console.log("Inference Results:", response.data);
+      return;
+    } catch (error) {
+      console.error("Error launching inference:", error);
+    }
+  };
+
+  const selectedModelData = data.find((model) => model.attributes.name === selectedModel);
+
+  useEffect(() => {
+    async function getModelSources() {
+      if (window.ethereum) {
+        const web3 = new Web3(window.ethereum);
+
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+
+        const modelSource = new web3.eth.Contract(TokenFactory, "0x4657d5c40ddbc649bb9592b969fda9c642c34a86");
+
+        const modelSources = await modelSource.methods
+          .getAllMintedModelNFTs()
+          .call()
+          .catch((error) => console.error(error));
+
+        if (modelSource && modelSources) {
+          setData(modelSources as []);
+        }
+      }
+    }
+    getModelSources();
+  }, []);
 
   return (
     <div className="flex flex-col w-full">
@@ -79,8 +128,8 @@ const Inference = () => {
           <span className="text-white">Select Model:</span>
           <select className="form-select mt-1 block w-full" value={selectedModel} onChange={handleModelChange}>
             {data.map((model) => (
-              <option key={model.hash} value={model.name}>
-                {model.name}
+              <option key={model.attributes.modelHash} value={model.tokenID}>
+                {model.attributes.name}
               </option>
             ))}
           </select>
@@ -93,22 +142,44 @@ const Inference = () => {
           </p>
         )}
 
-        <label className="block mt-4">
-          <span className="text-white">Upload Image:</span>
-          <input className="mt-1" type="file" accept="image/*" onChange={handleImageChange} />
-        </label>
+        {selectedModelData && selectedModelData.attributes.modelType === "Logistic Regression" ? (
+          <>
+            <label className="block mt-4">
+              <span className="text-white">Upload Image:</span>
+              <input className="mt-1" type="file" accept="image/*" onChange={handleImageChange} />
+            </label>
 
-        <div
-          onDrop={handleImageDrop}
-          onDragOver={(event) => event.preventDefault()}
-          className="mt-4 border-2 border-dashed border-gray-200 h-32 flex items-center justify-center text-gray-500"
-        >
-          Drop image here
-        </div>
+            <div
+              onDrop={handleImageDrop}
+              onDragOver={(event) => event.preventDefault()}
+              className="mt-4 border-2 border-dashed border-gray-200 h-32 flex items-center justify-center text-gray-500"
+            >
+              Drop image here
+            </div>
+          </>
+        ) : (
+          <>
+            <label className="block mt-4">
+              <span className="text-white">Upload Input:</span>
+              <input className="mt-1" type="file" accept="text/*" onChange={handleFileChange} />
+            </label>
+
+            <div
+              onDrop={handleFileDrop}
+              onDragOver={(event) => event.preventDefault()}
+              className="mt-4 border-2 border-dashed border-gray-200 h-32 flex items-center justify-center text-gray-500"
+            >
+              Drop input file here
+            </div>
+          </>
+        )}
         <button
           type="button"
           className="mt-4 text-amber-300 border-2 border-amber-300 rounded-lg text-lg hover:bg-amber-300 hover:bg-opacity-30"
-          onClick={() => alert("Inference started")}
+          onClick={() => {
+            launchInference(selectedModel);
+            setIsModalOpen(true);
+          }}
         >
           <div className="flex justify-center items-center">
             <>
@@ -116,6 +187,44 @@ const Inference = () => {
             </>
           </div>
         </button>
+        {isModalOpen && (
+          <div className="fixed z-10 inset-0 overflow-y-auto">
+            <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+              <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div className="absolute inset-0 bg-gray-500 opacity-75" />
+              </div>
+
+              <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div className="bg-gray-700 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                  <div className="sm:flex sm:items-start">
+                    <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-black sm:mx-0 sm:h-10 sm:w-10">
+                      <img src="encryptai-white.svg" className="h-6 w-6" alt="Loading" />
+                    </div>
+                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                      <h3 className="text-lg leading-6 font-medium text-white pt-2 pb-10">Inference Launched</h3>
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-900 rounded-full h-2.5 dark:bg-gray-900">
+                    <div className="bg-amber-300 h-2.5 rounded-full pt-2 animate-width-full" />
+                  </div>
+                </div>
+                <div className="bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                  <button
+                    type="button"
+                    className="mt-4 text-amber-300 border-2 border-amber-300 rounded-lg text-lg hover:bg-amber-300 hover:bg-opacity-30"
+                    onClick={() => setIsModalOpen(false)}
+                  >
+                    <div className="flex justify-center items-center">
+                      <>
+                        <span className="mx-2">Close</span>
+                      </>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
